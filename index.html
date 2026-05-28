@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Apostopoulos">
+  <meta name="theme-color" content="#0e0e0e">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="6-2.png">
+  <title>Apostopoulos Chimney Services</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0e0e0e;
+      --card:      #181818;
+      --border:    #282828;
+      --accent:    #d4521a;
+      --text:      #f2ede8;
+      --muted:     #777;
+      --safety:    #c0392b;
+      --aesthetic: #2471a3;
+      --economic:  #1e8449;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      min-height: 100dvh;
+      -webkit-text-size-adjust: 100%;
+      overflow-x: hidden;
+    }
+
+    /* ─── Content area ─── */
+    .services {
+      padding: calc(env(safe-area-inset-top, 0px) + 16px) 14px calc(env(safe-area-inset-bottom, 0px) + 40px);
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 4px 16px;
+    }
+
+    /* ─── Card ─── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .card.open {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px #d4521a1a, 0 6px 32px #00000070;
+    }
+
+    /* ─── Card tap area ─── */
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 14px 16px 16px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+      background: #222;
+      border: 1px solid #333;
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .card.open .card-icon {
+      background: #2a1a0e;
+      border-color: #d4521a44;
+    }
+
+    .card-text { flex: 1; min-width: 0; }
+    .card-name {
+      font-size: 15.5px;
+      font-weight: 600;
+      color: #f0f0f0;
+      line-height: 1.2;
+    }
+    .card-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+      line-height: 1.35;
+    }
+
+    .chevron {
+      flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #444;
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+    .chevron svg {
+      width: 18px; height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .card.open .chevron { transform: rotate(180deg); color: var(--accent); }
+
+    /* ─── Collapsible body ─── */
+    .card-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card.open .card-body { max-height: 1400px; }
+
+    .card-inner {
+      padding: 0 14px 20px;
+    }
+
+    .hr {
+      height: 1px;
+      background: #252525;
+      margin-bottom: 16px;
+    }
+
+    /* ─── Before / After photos ─── */
+    .photos {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .photos-6 {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    .photo {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #111;
+    }
+    .photo img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+    }
+    .photo-label {
+      position: absolute;
+      inset: auto 0 0;
+      padding: 22px 0 7px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #fff;
+    }
+    .photo-label.before {
+      background: linear-gradient(transparent, rgba(160,30,18,0.9));
+    }
+    .photo-label.after {
+      background: linear-gradient(transparent, rgba(21,130,60,0.9));
+    }
+
+    /* ─── Walkthrough step cards ─── */
+    .photo-step {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .photo-step .photo {
+      border-radius: 12px 12px 0 0;
+    }
+    .photo-step-caption {
+      background: #161616;
+      border: 1px solid #282828;
+      border-top: none;
+      border-radius: 0 0 12px 12px;
+      padding: 7px 6px 9px;
+      text-align: center;
+    }
+    .photo-status {
+      font-size: 9.5px;
+      font-weight: 800;
+      letter-spacing: 1.1px;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+    .photo-status.problem    { color: #e74c3c; }
+    .photo-status.in-progress { color: #e67e22; }
+    .photo-status.complete   { color: #2ecc71; }
+    .photo-step-desc {
+      font-size: 10.5px;
+      color: #999;
+      line-height: 1.3;
+    }
+    .walkthrough-header {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    /* ─── Info blocks ─── */
+    .info-stack { display: flex; flex-direction: column; gap: 8px; }
+
+    .info {
+      border-radius: 13px;
+      padding: 13px 14px;
+    }
+    .info.safety   { background: rgba(192,57,43,0.11);  border-left: 3px solid var(--safety); }
+    .info.aesthetic{ background: rgba(36,113,163,0.11); border-left: 3px solid var(--aesthetic); }
+    .info.economic { background: rgba(30,132,73,0.11);  border-left: 3px solid var(--economic); }
+
+    .info-tag {
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 1.1px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .info.safety    .info-tag { color: #e74c3c; }
+    .info.aesthetic .info-tag { color: #5dade2; }
+    .info.economic  .info-tag { color: #2ecc71; }
+
+    .info p {
+      font-size: 13.5px;
+      line-height: 1.58;
+      color: #bbb;
+    }
+
+  </style>
+</head>
+<body>
+
+  <main class="services">
+    <p class="section-label">Our Services — tap to expand</p>
+
+    <!-- ── 1. Chimney Liner Installation ── -->
+    <div class="card" id="c1">
+      <div class="card-header" onclick="toggle('c1')">
+        <div class="card-icon">🔩</div>
+        <div class="card-text">
+          <div class="card-name">Chimney Liner Installation</div>
+          <div class="card-sub">316Ti stainless steel liners — lifetime warranty</div>
+        </div>
+        <div class="chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="hr"></div>
+          <div class="walkthrough-header">Process Walkthrough — 6 Steps</div>
+          <div class="photos photos-6">
+            <div class="photo-step">
+              <div class="photo"><img src="1-1.jpg" alt="Problem: cracked clay tile liner"></div>
+              <div class="photo-step-caption">
+                <div class="photo-status problem">Problem</div>
+                <div class="photo-step-desc">Cracked clay tile liner</div>
+              </div>
+            </div>
+            <div class="photo-step">
+              <div class="photo"><img src="1-2.png" alt="Problem: flue interior before removal"></div>
+              <div class="photo-step-caption">
+                <div class="photo-status problem">Problem</div>
+                <div class="photo-step-desc">Flue interior before removal</div>
+              </div>
+            </div>
+            <div class="photo-step">
+              <div class="photo"><img src="1-3.png" alt="In progress: new stainless liner being fed in"></div>
+              <div class="photo-step-caption">
+                <div class="photo-status in-progress">In Progress</div>
+                <div class="photo-step-desc">New stainless liner being fed in</div>
+              </div>
+            </div>
+            <div class="photo-step">
+              <div class="photo"><img src="1-4.png" alt="In progress: liner connector secured at top"></div>
+              <div class="photo-step-caption">
+                <div class="photo-status in-progress">In Progress</div>
+                <div class="photo-step-desc">Liner connector secured at top</div>
+              </div>
+            </div>
+            <div class="photo-step">
+              <div class="photo"><img src="1-5.jpg" alt="Complete: completed liner from above"></div>
+              <div class="photo-step-caption">
+                <div class="photo-status complete">Complete</div>
+                <div class="photo-step-desc">Completed liner from above</div>
+              </div>
+            </div>
+            <div class="photo-step">
+              <div class="photo"><img src="1-6.png" alt="Complete: camera scan of finished liner"></div>
+              <div class="photo-step-caption">
+                <div class="photo-status complete">Complete</div>
+                <div class="photo-step-desc">Camera scan of finished liner</div>
+              </div>
+            </div>
+          </div>
+          <div class="info-stack">
+            <div class="info safety">
+              <div class="info-tag">🛡 Safety</div>
+              <p>Prevents carbon monoxide and toxic gases from leaking into living spaces — cracked clay liners are a leading cause of CO poisoning and chimney fires.</p>
+            </div>
+            <div class="info aesthetic">
+              <div class="info-tag">✦ Aesthetic</div>
+              <p>Restores a clean, professional interior that buyers and inspectors can see on camera — no more visible cracks, crumbling, or staining inside the flue.</p>
+            </div>
+            <div class="info economic">
+              <div class="info-tag">$ Economic</div>
+              <p>A lifetime-warranted stainless liner eliminates repeated repointing and clay tile replacement costs, and is required to close many home sales.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 2. Chimney Repairs ── -->
+    <div class="card" id="c2">
+      <div class="card-header" onclick="toggle('c2')">
+        <div class="card-icon">🧱</div>
+        <div class="card-text">
+          <div class="card-name">Chimney Repairs</div>
+          <div class="card-sub">Crown repairs, brickwork, tuckpointing — 10-year warranty</div>
+        </div>
+        <div class="chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="hr"></div>
+          <div class="photos">
+            <div class="photo">
+              <img src="2-1.png" alt="Before: cracked crown and spalling brick">
+              <div class="photo-label before">Before</div>
+            </div>
+            <div class="photo">
+              <img src="2-2.png" alt="After: rebuilt crown and repointed brick">
+              <div class="photo-label after">After</div>
+            </div>
+          </div>
+          <div class="info-stack">
+            <div class="info safety">
+              <div class="info-tag">🛡 Safety</div>
+              <p>Damaged crowns and missing mortar allow water to penetrate the masonry, eventually leading to structural collapse — repairs stop water intrusion before it reaches the firebox.</p>
+            </div>
+            <div class="info aesthetic">
+              <div class="info-tag">✦ Aesthetic</div>
+              <p>Fresh tuckpointing and a smooth crown restore the chimney's original clean lines — eliminating the crumbling, stained look that signals neglect to neighbors and buyers.</p>
+            </div>
+            <div class="info economic">
+              <div class="info-tag">$ Economic</div>
+              <p>Fixing a crown early costs a fraction of a full chimney rebuild — left untreated, water damage compounds into masonry replacement, interior water damage, and failed inspections.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 3. Fireplace & Masonry ── -->
+    <div class="card" id="c3">
+      <div class="card-header" onclick="toggle('c3')">
+        <div class="card-icon">🔥</div>
+        <div class="card-text">
+          <div class="card-name">Fireplace &amp; Masonry</div>
+          <div class="card-sub">Fireplace rebuilds, smoke chamber repairs, waterproofing</div>
+        </div>
+        <div class="chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="hr"></div>
+          <div class="photos">
+            <div class="photo">
+              <img src="3-1.png" alt="Before: rough, deteriorated smoke chamber">
+              <div class="photo-label before">Before</div>
+            </div>
+            <div class="photo">
+              <img src="3-2.png" alt="After: parged, smooth smoke chamber">
+              <div class="photo-label after">After</div>
+            </div>
+          </div>
+          <div class="info-stack">
+            <div class="info safety">
+              <div class="info-tag">🛡 Safety</div>
+              <p>Rough, stepped smoke chamber walls create turbulence that causes smoke rollout into the room — parging creates a smooth surface that channels combustion gases safely up and out.</p>
+            </div>
+            <div class="info aesthetic">
+              <div class="info-tag">✦ Aesthetic</div>
+              <p>A fully rebuilt firebox with properly aligned brick and clean mortar joints transforms the focal point of any room from an eyesore into a showpiece.</p>
+            </div>
+            <div class="info economic">
+              <div class="info-tag">$ Economic</div>
+              <p>An efficient smoke chamber reduces creosote buildup, meaning fewer annual sweepings, lower risk of chimney fires, and smaller insurance claims over time.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 4. Inspections & Affidavits ── -->
+    <div class="card" id="c4">
+      <div class="card-header" onclick="toggle('c4')">
+        <div class="card-icon">🔍</div>
+        <div class="card-text">
+          <div class="card-name">Inspections &amp; Affidavits</div>
+          <div class="card-sub">Level 2 inspections, video scans, code compliance</div>
+        </div>
+        <div class="chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="hr"></div>
+          <div class="photos">
+            <div class="photo">
+              <img src="4-1.png" alt="Before: unscoped, unknown interior condition">
+              <div class="photo-label before">Before</div>
+            </div>
+            <div class="photo">
+              <img src="4-2.png" alt="After: fully scoped and documented">
+              <div class="photo-label after">After</div>
+            </div>
+          </div>
+          <div class="info-stack">
+            <div class="info safety">
+              <div class="info-tag">🛡 Safety</div>
+              <p>Video scanning reveals hidden cracks, blockages, and animal nests invisible to the naked eye — the only way to confirm the flue is safe before lighting a fire.</p>
+            </div>
+            <div class="info aesthetic">
+              <div class="info-tag">✦ Aesthetic</div>
+              <p>A signed affidavit and code compliance letter gives buyers and real estate agents documented proof of condition — removing uncertainty that can kill a deal.</p>
+            </div>
+            <div class="info economic">
+              <div class="info-tag">$ Economic</div>
+              <p>A Level 2 inspection is required by NFPA 211 at every change of occupancy — having one ready on the seller's side avoids costly post-offer negotiation credits.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 5. Waterproofing & Crowns ── -->
+    <div class="card" id="c5">
+      <div class="card-header" onclick="toggle('c5')">
+        <div class="card-icon">💧</div>
+        <div class="card-text">
+          <div class="card-name">Waterproofing &amp; Crowns</div>
+          <div class="card-sub">Protect your chimney from water damage and costly future repairs</div>
+        </div>
+        <div class="chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="hr"></div>
+          <div class="photos">
+            <div class="photo">
+              <img src="5-1.png" alt="Before: efflorescence and water staining">
+              <div class="photo-label before">Before</div>
+            </div>
+            <div class="photo">
+              <img src="5-2.png" alt="After: sealed, water-repellent masonry">
+              <div class="photo-label after">After</div>
+            </div>
+          </div>
+          <div class="info-stack">
+            <div class="info safety">
+              <div class="info-tag">🛡 Safety</div>
+              <p>Water penetrating the chimney migrates into wall cavities and attic spaces, promoting mold growth — waterproofing seals the masonry while still allowing vapor to escape outward.</p>
+            </div>
+            <div class="info aesthetic">
+              <div class="info-tag">✦ Aesthetic</div>
+              <p>Eliminates white efflorescence staining and the dark water-streak look on brick, restoring a clean, dry exterior that holds curb appeal year-round.</p>
+            </div>
+            <div class="info economic">
+              <div class="info-tag">$ Economic</div>
+              <p>A single waterproofing treatment prevents the freeze-thaw spalling cycle that can require complete chimney rebuilds — a $300–500 service that protects a $10,000+ asset.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 6. Chimney Caps & Dampers ── -->
+    <div class="card" id="c6">
+      <div class="card-header" onclick="toggle('c6')">
+        <div class="card-icon">🛡️</div>
+        <div class="card-text">
+          <div class="card-name">Chimney Caps &amp; Dampers</div>
+          <div class="card-sub">Quality caps &amp; dampers to keep your home safe and efficient</div>
+        </div>
+        <div class="chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="hr"></div>
+          <div class="photos">
+            <div class="photo">
+              <img src="6-1.png" alt="Before: uncapped, open flue">
+              <div class="photo-label before">Before</div>
+            </div>
+            <div class="photo">
+              <img src="6-2.png" alt="After: stainless cap and top-sealing damper">
+              <div class="photo-label after">After</div>
+            </div>
+          </div>
+          <div class="info-stack">
+            <div class="info safety">
+              <div class="info-tag">🛡 Safety</div>
+              <p>An uncapped flue is an open entry point for birds, squirrels, and raccoons — nesting debris is one of the most common causes of chimney fires and carbon monoxide backup.</p>
+            </div>
+            <div class="info aesthetic">
+              <div class="info-tag">✦ Aesthetic</div>
+              <p>A properly sized, matching stainless cap completes the chimney's roofline silhouette — the difference between a finished professional job and an unfinished one is visible from the street.</p>
+            </div>
+            <div class="info economic">
+              <div class="info-tag">$ Economic</div>
+              <p>Top-sealing dampers reduce heating and cooling loss by up to 90% compared to throat dampers — paying for themselves in energy savings within the first winter season.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function toggle(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
